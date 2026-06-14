@@ -2,7 +2,10 @@ import { render } from 'sass';
 import loadRecipe from './model.js';
 import * as model from './model.js';
 import RecipeView from './views/RecipeView.js'
-//const recipeContainer = document.querySelector('.recipe');
+import SearchView from './views/SearchView.js';
+import resultsView from './views/ResultView.js';
+
+const recipeView = new RecipeView();
 
 const timeout = function (s) {
   return new Promise(function (_, reject) {
@@ -30,9 +33,9 @@ const controlRecipes = async function()
       return;
     }
 
-    const recipeView = new RecipeView();
-    recipeView.renderSpinner();
     
+    recipeView.renderSpinner();
+
     //Llamar a otro archivo
     const respon = await loadRecipe(id);
     
@@ -44,7 +47,8 @@ const controlRecipes = async function()
   }
   catch(ex)
   {
-    alert(`Se tiene un error  de la API\n ${ex}`);
+    recipeView.renderError(ex)
+    //alert(`Se tiene un error  de la API\n ${ex}`);
   }
 }
 
@@ -61,9 +65,28 @@ const controlRecipes = async function()
 // }
 //showRecipe();
 
-// //Eventos
-//Llamar al cargar la página
-const eventArray = ['load', 'hashchange']
-eventArray.forEach(ev => {
-  window.addEventListener(ev, controlRecipes);
-});
+
+
+const controlSearchResults = async function() {
+  try {
+    const query = SearchView.getQuery();
+    if (!query) return;
+
+    resultsView.renderSpinner();
+
+     var result = await model.loadSearchResults(query);
+     console.log(result);
+
+    resultsView.render(model.getState().search.result);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function init()
+{
+  recipeView.addHandlerRender(controlRecipes);
+  SearchView.addHandlerSearch(controlSearchResults);
+}
+
+init();

@@ -13,20 +13,23 @@ export const  getJson = async function(URL)
 {
     try
     {
+      
+
         const fetchPro = fetch(URL);
         const res = await Promise.race([fetchPro, timeout(TIMEOUT_SEC)]);
-        console.log(URL);
+        console.log(fetchPro);
 
         //Llamada a la API
-        const data = await res.json();
-        const recipes = data.data.recipe;
-
+        const datas = await res.json();
+        //console.log( datas.data.recipes)
+       // const recipes = datas.data.recipe;
+       const recipes = datas.data;
 
         return recipes;
     }
     catch(err)
     {
-      alert(`Se tiene un error al obtener la informacion de la API\n ${err}`);
+      alert(`Se tiene un error al obtener la informacion de la API\n ${err}, ${URL}`);
       throw err;
     }
     
