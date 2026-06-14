@@ -1,14 +1,17 @@
 import * as config from './config'
 import * as helpers from './helpers'
 import { TIMEOUT_SEC } from './config.js';
+import { RES_PER_PAGE } from './config';
 
 const state = {
   recipe: {},
   search: 
     {
         query : "",
-        result : {}
-    }
+        result : {},
+        page : 1,
+        resultsPerPage : RES_PER_PAGE
+    },
 };
 
 
@@ -58,7 +61,15 @@ export const loadSearchResults = async function(query)
 
 }
 
+export const getSearchResultsPage = function(page = state.search.page) 
+{
+  state.search.page = page;
 
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+  console.log("Esto" + state.search.result.slice(start, end))
+  return state.search.result.slice(start, end);
+}
 //loadSeachResults("pizza");
 
 
